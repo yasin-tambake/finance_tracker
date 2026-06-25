@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
-
+from typing import Literal
+from datetime import date
 class UserCreate(BaseModel):
     
     username: str = Field(
@@ -43,3 +44,42 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
+class CategoryCreate(BaseModel):
+    name: str
+    type: Literal["Income", "Expense"]
+
+
+class CategoryResponse(BaseModel):
+    id: int
+    name: str
+    type: str
+
+    class Config:
+        from_attributes = True
+
+class TransactionCreate(BaseModel):
+
+    category_id: int
+    amount: float
+    description: str
+    transaction_date: date
+
+
+class TransactionUpdate(BaseModel):
+
+    category_id: int
+    amount: float
+    description: str
+    transaction_date: date
+
+
+class TransactionResponse(BaseModel):
+
+    id: int
+    category_id: int
+    amount: float
+    description: str
+    transaction_date: date
+
+    class Config:
+        from_attributes = True

@@ -1,19 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker Dashboard</title>
 </head>
+
 <body>
 
-<h1>Finance Tracker Dashboard</h1>
+    <h1>Personal Finance Tracker</h1>
 
-<p id="welcome"></p>
+    <button onclick="logout()">
+        Logout
+    </button>
 
-<button onclick="logout()">
-    Logout
-</button>
+    <hr>
 
-<script src="js/dashboard.js"></script>
+    <h2>Add Category</h2>
+
+    <input
+        type="text"
+        id="category-name"
+        placeholder="Category Name"
+    >
+
+    <select id="category-type">
+        <option value="Income">
+            Income
+        </option>
+
+        <option value="Expense">
+            Expense
+        </option>
+    </select>
+
+    <button onclick="addCategory()">
+        Add Category
+    </button>
+
+    <hr>
+
+    <h2>Your Categories</h2>
+
+    <button onclick="loadCategories()">
+        View Categories
+    </button>
+
+    <br><br>
+
+    <ul id="category-list"></ul>
+
+
+    <script src="js/dashboard.js"></script>
 
 </body>
+
 </html>

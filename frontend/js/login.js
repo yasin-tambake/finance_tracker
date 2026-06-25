@@ -1,22 +1,32 @@
 async function loginUser() {
 
-    const username_or_email =
+    const username =
         document.getElementById("username_or_email").value;
 
     const password =
         document.getElementById("password").value;
+
+    const formData = new URLSearchParams();
+
+    formData.append(
+        "username",
+        username
+    );
+
+    formData.append(
+        "password",
+        password
+    );
 
     const response = await fetch(
         "http://127.0.0.1:8000/login",
         {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type":
+                    "application/x-www-form-urlencoded"
             },
-            body: JSON.stringify({
-                username_or_email,
-                password
-            })
+            body: formData
         }
     );
 
@@ -26,8 +36,6 @@ async function loginUser() {
         document.getElementById("message");
 
     if (response.ok) {
-
-        console.log(data);
 
         localStorage.setItem(
             "access_token",
