@@ -31,10 +31,9 @@ class User(Base):
         server_default=text("CURRENT_TIMESTAMP")
     )
 
-    categories = relationship(
-        "Category",
-        back_populates="user"
-    )
+    categories = relationship("Category", back_populates="user")
+    transactions = relationship("Transaction",back_populates="user"
+)
 
 class Category(Base):
     __tablename__ = "categories"
@@ -52,6 +51,7 @@ class Category(Base):
     )
 
     user = relationship("User", back_populates="categories")
+    transactions = relationship("Transaction", back_populates="category")
 
 class Transaction(Base):
 

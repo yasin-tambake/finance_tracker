@@ -1,4 +1,4 @@
-from sqlalchemy import or_
+from sqlalchemy import func, or_
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -7,7 +7,6 @@ from app.database import get_db
 from app.models import Category, User
 from app.schemas import CategoryCreate, CategoryResponse
 from app.auth import get_current_user
-from fastapi import Header
 router = APIRouter(
     prefix="/categories",
     tags=["Categories"]
@@ -20,11 +19,19 @@ def create_category(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    print("Logged in user:", current_user.id)
+    print("Category:", category.name)
 
     existing = db.query(Category).filter(
-        Category.name == category.name,
+        func.lower(Category.name) == category.name.lower(),
+        func.lower(Category.type) == category.type.lower(),
         Category.user_id == current_user.id
     ).first()
+
+    print("Existing:", existing)
+
+    if existing:
+        print("Existing user_id:", existing.user_id)
 
     if existing:
         raise HTTPException(
@@ -134,3 +141,29 @@ def delete_category(
     return {
         "message": "Category deleted successfully"
     }
+
+@router.get(
+    "/type/{category_type}",
+    response_model=list[CategoryResponse]
+)
+def get_categories_by_type(
+    category_type: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    category_type = category_type.strip().capitalize()
+    if category_type not in ["Income", "Expense"]:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid category type"
+        )
+
+    categories = db.query(Category).filter(
+        func.lower(Category.type) == category_type.lower(),
+        or_(
+            Category.user_id == None,
+            Category.user_id == current_user.id
+        )
+    ).all()
+
+    return categories

@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
     <title>Finance Tracker Dashboard</title>
 </head>
 
@@ -17,7 +18,112 @@
 
     <hr>
 
-    <h2>Add Category</h2>
+    <h2>Add Transaction</h2>
+
+    <label>Type</label>
+    <br>
+
+    <select id="transaction-type"
+            onchange="loadCategoriesByType()">
+
+        <option value="income">
+            Income
+        </option>
+
+        <option value="expense">
+            Expense
+        </option>
+
+    </select>
+
+    <br><br>
+
+    <label>Category</label>
+    <br>
+
+    <select id="transaction-category">
+    </select>
+
+    <br><br>
+
+    <label>Amount</label>
+    <br>
+
+    <input
+        type="number"
+        id="transaction-amount"
+        placeholder="Amount"
+        step="0.01"
+    >
+
+    <br><br>
+
+    <label>Description</label>
+    <br>
+
+    <input
+        type="text"
+        id="transaction-description"
+        placeholder="Description"
+    >
+
+    <br><br>
+
+    <label>Date</label>
+    <br>
+
+    <input
+        type="date"
+        id="transaction-date"
+    >
+
+    <br><br>
+
+    <button onclick="addTransaction()">
+        Add Transaction
+    </button>
+
+    <hr>
+
+    <h2>Your Transactions</h2>
+
+    <button onclick="loadTransactions()">
+        Refresh Transactions
+    </button>
+
+    <br><br>
+
+    <table border="1" cellpadding="10">
+
+        <thead>
+
+            <tr>
+
+                <th>Date</th>
+
+                <th>Type</th>
+
+                <th>Category</th>
+
+                <th>Amount</th>
+
+                <th>Description</th>
+
+                <th>Actions</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="transaction-table">
+
+        </tbody>
+
+    </table>
+
+    <hr>
+
+    <h2>Category Management</h2>
 
     <input
         type="text"
@@ -26,22 +132,22 @@
     >
 
     <select id="category-type">
-        <option value="Income">
+
+        <option value="income">
             Income
         </option>
 
-        <option value="Expense">
+        <option value="expense">
             Expense
         </option>
+
     </select>
 
     <button onclick="addCategory()">
         Add Category
     </button>
 
-    <hr>
-
-    <h2>Your Categories</h2>
+    <br><br>
 
     <button onclick="loadCategories()">
         View Categories
@@ -50,7 +156,6 @@
     <br><br>
 
     <ul id="category-list"></ul>
-
 
     <script src="js/dashboard.js"></script>
 
