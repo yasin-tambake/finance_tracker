@@ -2,9 +2,8 @@ from sqlalchemy import func, or_
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 from app.database import get_db
-from app.models import Category, User
+from app.models import Category, User, Transaction
 from app.schemas import CategoryCreate, CategoryResponse
 from app.auth import get_current_user
 router = APIRouter(
@@ -134,7 +133,16 @@ def delete_category(
             status_code=404,
             detail="Category not found"
         )
+    
+    transaction_exists = db.query(Transaction).filter(
+        Transaction.category_id == category.id
+    ).first()
 
+    if transaction_exists:
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot delete category because transactions exist."
+        )
     db.delete(category)
     db.commit()
 

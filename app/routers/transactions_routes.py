@@ -1,12 +1,16 @@
 from datetime import date
-
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy import func
+from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from math import ceil
 
 from app.database import get_db
 from app.models import Transaction, Category, User
 from app.schemas import (
     TransactionCreate,
+    TransactionListResponse,
     TransactionUpdate,
     TransactionResponse
 )
@@ -58,17 +62,81 @@ def create_transaction(
     return new_transaction
 
 
-@router.get("/", response_model=list[TransactionResponse])
+@router.get("/", response_model=TransactionListResponse)
 def get_transactions(
+    search: str | None = None,
+    category: str | None = None,
+    type: str | None = None,
+    from_date: date | None = Query(None, alias="from"),
+    to_date: date | None = Query(None, alias="to"),
+    sort: str = "date_desc",
+    page: int = 1,
+    limit: int = 10,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
 
-    transactions = db.query(Transaction).filter(
-        Transaction.user_id == current_user.id
-    ).all()
+    query = (
+        db.query(Transaction)
+        .join(Category)
+        .filter(Transaction.user_id == current_user.id)
+    )
 
-    return transactions
+    if search:
+        query = query.filter(
+            Transaction.description.ilike(f"%{search}%")
+        )
+
+    if category:
+        query = query.filter(
+            func.lower(Category.name) == category.lower()
+        )
+
+    if type:
+        query = query.filter(
+            func.lower(Category.type) == type.lower()
+        )
+
+    if from_date:
+        query = query.filter(
+            Transaction.transaction_date >= from_date
+        )
+
+    if to_date:
+        query = query.filter(
+            Transaction.transaction_date <= to_date
+        )
+
+    if sort == "amount_asc":
+        query = query.order_by(Transaction.amount.asc())
+
+    elif sort == "amount_desc":
+        query = query.order_by(Transaction.amount.desc())
+
+    elif sort == "date_asc":
+        query = query.order_by(Transaction.transaction_date.asc())
+
+    else:
+        query = query.order_by(Transaction.transaction_date.desc())
+
+    total = query.count()
+
+    pages = ceil(total / limit) if total else 1
+
+    transactions = (
+        query
+        .offset((page - 1) * limit)
+        .limit(limit)
+        .all()
+    )
+
+    return {
+        "page": page,
+        "limit": limit,
+        "total": total,
+        "pages": pages,
+        "transactions": transactions
+    }
 
 
 @router.get("/{transaction_id}", response_model=TransactionResponse)

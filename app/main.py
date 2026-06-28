@@ -7,6 +7,7 @@ from app.models import Base
 from app.routers import transactions_routes, users
 from app.routers import auth_routes
 from app.routers import categories
+from app.routers import dashboard_routes
 
 Base.metadata.create_all(bind=engine)
 
@@ -24,7 +25,7 @@ app.include_router(users.router)
 app.include_router(auth_routes.router)
 app.include_router(categories.router)
 app.include_router(transactions_routes.router)
-
+app.include_router(dashboard_routes.router)
 
 @app.get("/")
 def home():
